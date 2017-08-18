@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;beGuiTheme&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-label style-name="bold" plain-text :center>
+     Process input data through BeFriend graph algorithm 
+   </vaadin-label>
+   <vaadin-label plain-text _id="sourceFileLab" :center>
+     asdfasdfdasfasdf 
+   </vaadin-label>
+   <vaadin-button style-name="friendly" plain-text _id="beginButt" :center>
+     Begin 
+   </vaadin-button>
+   <vaadin-button enabled="false" style-name="small" plain-text _id="cancelButt" :center>
+     Cancel 
+   </vaadin-button>
+   <vaadin-text-area caption="Job status" style-name="tiny" width="80%" height-full readonly _id="ta" :center :expand></vaadin-text-area>
+   <vaadin-combo-box caption="Result graphs" empty-selection-allowed="false" width="80%" data-item-type="java.lang.String" _id="resultsCB" :center>
+    <option item="Option1">Option 1</option>
+    <option item="Option2">Option 2</option>
+    <option item="Option3">Option 3</option>
+   </vaadin-combo-box>
+   <vaadin-button enabled="false" style-name="friendly" plain-text _id="doGraphButt" :center>
+     Render selected graph in new browser window 
+   </vaadin-button>
+   <vaadin-label height="10px" plain-text _id="spacer"></vaadin-label>
+  </vaadin-vertical-layout>
+ </body>
+</html>

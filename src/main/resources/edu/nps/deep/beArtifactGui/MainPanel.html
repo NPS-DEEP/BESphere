@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;beGuiTheme&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-vertical-layout style-name="lightgrey-border-2" size-auto :center>
+    <vaadin-label style-name="large bold" plain-text>
+      Bulk Extractor Artifact Explorer 
+    </vaadin-label>
+    <vaadin-label plain-text :center>
+      Research funded by DIA 
+    </vaadin-label>
+   </vaadin-vertical-layout>
+   <vaadin-label height="50px" plain-text></vaadin-label>
+   <vaadin-combo-box caption="Enter server path to artifact file:" empty-selection-allowed="false" width="80%" data-item-type="java.lang.String" _id="fileNameCombo" :center>
+    <option item="Option1">Option 1</option>
+    <option item="Option2">Option 2</option>
+    <option item="Option3">Option 3</option>
+   </vaadin-combo-box>
+   <vaadin-button style-name="tiny" plain-text _id="confirmButt" :center>
+     Confirm file presence 
+   </vaadin-button>
+   <vaadin-label height="50px" plain-text></vaadin-label>
+   <vaadin-horizontal-layout :center :expand>
+    <vaadin-button enabled="false" style-name="friendly" plain-text _id="generateBEFriendButt">
+      Generate BE-Friend graph 
+    </vaadin-button>
+    <vaadin-button enabled="false" plain-text _id="generateButt">
+      Generate simple proximity graph 
+    </vaadin-button>
+   </vaadin-horizontal-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>
