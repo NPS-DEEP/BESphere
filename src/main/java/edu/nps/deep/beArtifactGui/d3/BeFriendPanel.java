@@ -2,14 +2,19 @@ package edu.nps.deep.beArtifactGui.d3;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import com.vaadin.server.BrowserWindowOpener;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.WrappedSession;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 
+import edu.nps.deep.beArtifactGui.BeGuiUI;
 import edu.nps.deep.beArtifactGui.py.RunBefriendPyThreaded;
 import edu.nps.deep.beArtifactGui.py.RunBefriendPyThreaded.ProcessListener;
 
@@ -39,7 +44,9 @@ public class BeFriendPanel extends _BeFriendPanel implements ProcessListener
     cancelButt.addClickListener(e->doCancel());
     resultsCB.addSelectionListener(e-> {
       doGraphButt.setEnabled(true);
-      RunBefriendPyThreaded.renderQ.add(new File[] {new File(sourcefile),getGexfFile()});
+      @SuppressWarnings("unchecked")
+      LinkedList<File[]> renderQ = (LinkedList<File[]>) myUI.getSession().getAttribute(BeGuiUI.RENDERQ_ATTRIBUTE);
+      renderQ.add(new File[] {new File(sourcefile),getGexfFile()});
     });
     BrowserWindowOpener opener = new BrowserWindowOpener(RunBefriendPyThreaded.class);
     opener.extend(doGraphButt);

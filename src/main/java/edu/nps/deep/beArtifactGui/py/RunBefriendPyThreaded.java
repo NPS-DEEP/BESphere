@@ -35,6 +35,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+import edu.nps.deep.beArtifactGui.BeGuiUI;
 import edu.nps.deep.beArtifactGui.d3.ForceDirectedPanel;
 
 @Theme("beGuiTheme")
@@ -64,7 +65,7 @@ public class RunBefriendPyThreaded extends UI implements Runnable
   //public static String EXECUTABLE = "/Library/Frameworks/Python.framework/Versions/3.5/bin/python3";
   public static String SOURCE_NAME = "befriend.py";
   
-  public static LinkedList<File[]> renderQ = new LinkedList<>();
+ // public static LinkedList<File[]> renderQ = new LinkedList<>();
   
   private File resultsDirectory;
   private File inputData;
@@ -288,6 +289,8 @@ public class RunBefriendPyThreaded extends UI implements Runnable
   @Override
   protected void init(VaadinRequest request)
   {
+    @SuppressWarnings("unchecked")
+    LinkedList<File[]> renderQ = (LinkedList<File[]>)getSession().getAttribute(BeGuiUI.RENDERQ_ATTRIBUTE);
     if(renderQ.isEmpty()) {
       VerticalLayout vl = new VerticalLayout();
       vl.addComponent(new Label("No file"));

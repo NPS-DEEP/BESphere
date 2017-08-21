@@ -1,5 +1,8 @@
 package edu.nps.deep.beArtifactGui;
 
+import java.io.File;
+import java.util.LinkedList;
+
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Push;
@@ -22,11 +25,21 @@ import com.vaadin.ui.UI;
 @Push
 public class BeGuiUI extends UI
 {
+  public static String RENDERQ_ATTRIBUTE = "renderQ";
+
   @Override
   protected void init(VaadinRequest vaadinRequest)
   {
     getPage().setTitle("Bulk Extractor Artifact Explorer");
     setContent(new MainP());
+    
+    /* Because we're potentially launching D3 graphs in new tabs, which we launch by providing a UI class name, we can't readily
+     * pass parameters, as in which dataset to display.  We use this global queue shared only by windows in this session.  A simple static
+     * queue would not suffice since we may have multiple users sharing the same VM.  Hang the queue off the session object which
+     * can be accessed through all UIs.
+     */
+    LinkedList<File[]> renderQ = new LinkedList<>();
+    getSession().setAttribute(RENDERQ_ATTRIBUTE, renderQ);
   }
 
   @WebServlet(urlPatterns = "/*", name = "begui", asyncSupported = true)
