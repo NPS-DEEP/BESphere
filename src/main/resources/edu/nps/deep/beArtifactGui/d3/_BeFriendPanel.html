@@ -11,15 +11,38 @@
      Process input data through BeFriend graph algorithm 
    </vaadin-label>
    <vaadin-label plain-text _id="sourceFileLab" :center>
-     asdfasdfdasfasdf 
+     Artifact file: asldfasdfasdf 
    </vaadin-label>
-   <vaadin-button style-name="friendly" plain-text _id="beginButt" :center>
-     Begin 
-   </vaadin-button>
-   <vaadin-button enabled="false" style-name="small" plain-text _id="cancelButt" :center>
-     Cancel 
-   </vaadin-button>
-   <vaadin-text-area caption="Job status" style-name="tiny" width="80%" height-full readonly _id="ta" :center :expand></vaadin-text-area>
+   <vaadin-vertical-layout style-name="lightgrey-border-2 side-padding-5" spacing="false" size-auto margin="false" :center>
+    <vaadin-horizontal-layout spacing="false" :center>
+     <vaadin-label plain-text :middle>
+       Options 
+     </vaadin-label>
+     <vaadin-button icon="fonticon://Vaadin-Icons/e732" description="<h3>Hi mom</h3>
+<b>bold</b>
+" style-name="tiny borderless-colored" plain-text _id="helpButt"></vaadin-button>
+    </vaadin-horizontal-layout>
+    <vaadin-horizontal-layout :center>
+     <vaadin-text-field caption="window size" style-name="tiny" _id="winSizeTF"></vaadin-text-field>
+     <vaadin-vertical-layout spacing="false" size-auto margin="false" :middle>
+      <vaadin-check-box caption="fixed window" _id="fixedWinCB" :middle></vaadin-check-box>
+      <vaadin-check-box caption="keep loners" _id="lonersCB"></vaadin-check-box>
+     </vaadin-vertical-layout>
+     <vaadin-text-field caption="big subgraph #" style-name="tiny" _id="subgraphsTF"></vaadin-text-field>
+    </vaadin-horizontal-layout>
+    <vaadin-button style-name="tiny link" plain-text _id="restoreDefaultsButt" :center>
+      Restore defaults 
+    </vaadin-button>
+   </vaadin-vertical-layout>
+   <vaadin-horizontal-layout :center>
+    <vaadin-button style-name="friendly" plain-text _id="beginButt" :middle>
+      Begin 
+    </vaadin-button>
+    <vaadin-button enabled="false" style-name="small" plain-text _id="cancelButt" :middle>
+      Cancel 
+    </vaadin-button>
+   </vaadin-horizontal-layout>
+   <vaadin-text-area caption="Job status" style-name="tiny" size-full readonly _id="ta" :center :expand></vaadin-text-area>
    <vaadin-combo-box caption="Result graphs" empty-selection-allowed="false" width="80%" data-item-type="java.lang.String" _id="resultsCB" :center>
     <option item="Option1">Option 1</option>
     <option item="Option2">Option 2</option>

@@ -36,6 +36,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import edu.nps.deep.beArtifactGui.BeGuiUI;
+import edu.nps.deep.beArtifactGui.d3.BeFriendPanel.FriendOptions;
 import edu.nps.deep.beArtifactGui.d3.ForceDirectedPanel;
 
 @Theme("beGuiTheme")
@@ -74,10 +75,12 @@ public class RunBefriendPyThreaded extends UI implements Runnable
   private ProcessListener lis;
   private Process p;
   private Thread thr;
-
-  public RunBefriendPyThreaded go(String dataFilePath, ProcessListener lis) throws Exception
+  private FriendOptions opts;
+  
+  public RunBefriendPyThreaded go(String dataFilePath, ProcessListener lis, FriendOptions opts) throws Exception
   {
     this.lis = lis;
+    this.opts = opts;
     makeResultsDir();
     
     inputData = new File(dataFilePath);
@@ -105,9 +108,22 @@ public class RunBefriendPyThreaded extends UI implements Runnable
   public void run()
   {    
     try {
-      String[] arguments = { executable, pySrc, "-f", inputData.getName()/* dataFn */, "-o",
-                             resultsDirectory.getAbsolutePath(), "-w", "32", inputData.getParent()/* dataDir */ };
+      ArrayList<String> arrLis = new ArrayList<>();
+      arrLis.add(executable);
+      arrLis.add(pySrc);
+      arrLis.add("-f");
+      arrLis.add(inputData.getName());
+      arrLis.add("-o");
+      arrLis.add(resultsDirectory.getAbsolutePath());
 
+      handleOptions(arrLis);
+      arrLis.add(inputData.getParent());
+      //String[] arguments = { executable, pySrc, "-f", inputData.getName()/* dataFn */, "-o",
+     //                        resultsDirectory.getAbsolutePath(), "-w", "32", inputData.getParent()/* dataDir */ };
+      
+
+      String[] arguments = new String[arrLis.size()];
+      arguments = arrLis.toArray(arguments);
       ProcessBuilder pb = new ProcessBuilder(arguments);
      // pb.inheritIO();
       pb.redirectErrorStream(true);
@@ -139,7 +155,19 @@ public class RunBefriendPyThreaded extends UI implements Runnable
       lis.jobDone(-1);
     }
   }
-
+  
+  private void handleOptions(ArrayList<String>arrLis)
+  {
+    arrLis.add("-w");
+    arrLis.add(""+opts.windowSize);
+    if(opts.fixedWindow)
+      arrLis.add("-F");
+    if(opts.keepLoners)
+      arrLis.add("-k");
+    arrLis.add("-m");
+    arrLis.add(""+opts.subgraph);
+  }
+  
   class IOThreadHandler extends Thread
   {
     private InputStream inputStream;

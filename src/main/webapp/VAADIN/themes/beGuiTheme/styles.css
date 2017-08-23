@@ -14770,3 +14770,8 @@ div.v-layout.v-horizontal.v-widget {
 .beGuiTheme .black-border-1 {
 	border: 1px solid black;
 }
+
+.beGuiTheme .side-padding-5 {
+	padding-left: 5px;
+	padding-right: 5px;
+}
