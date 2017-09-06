@@ -2,7 +2,7 @@
 var fdNameSpace = fdNameSpace || {};
 
 // This inits the component
-fdNameSpace.ForceDirected = function(element) {
+fdNameSpace.FruchtermanReingold = function(element) {
 
   // Getter and setter for the value property
   this.getValue = function()
@@ -18,6 +18,7 @@ fdNameSpace.ForceDirected = function(element) {
   // build the graph based on the argument: [3]:width,height,json
   this.doit = function(value)
   {
+	//setTimeout(function(){debugger;}, 6000);
 	var svg = d3.select("svg");
 	
 	var width = value[0];
@@ -27,17 +28,26 @@ fdNameSpace.ForceDirected = function(element) {
 	svg.attr("width",width);
 	svg.attr("height",height);
 
-	var mycolors = d3.scaleOrdinal(d3.schemeCategory20);
-    var min_zoom = 0.1;
-    var max_zoom = 7;
-    var zoom = d3.zoom().scaleExtent([min_zoom,max_zoom]);
+	//var mycolors = d3.scaleOrdinal(d3.schemeCategory20);
+   // var min_zoom = 0.1;
+   // var max_zoom = 7;
+   // var zoom = d3.zoom().scaleExtent([min_zoom,max_zoom]);
 
-	var simulation = d3.forceSimulation()
-	    .force("link", d3.forceLink()
-	    		.id(function(d) { return d.id; })
-	    		.distance(function(d){  return 100;/*d.value;*/})) //default=30
-	    .force("charge", d3.forceManyBody())
-	    .force("center", d3.forceCenter(width / 2, height / 2));
+	//var simulation = d3.forceSimulation()
+	//    .force("link", d3.forceLink()
+	//    		.id(function(d) { return d.id; })
+	//    		.distance(function(d){  return 100;/*d.value;*/})) //default=30
+	//    .force("charge", d3.forceManyBody())
+	//    .force("center", d3.forceCenter(width / 2, height / 2));
+
+    var simulation = d3.layout.fruchtermanReingold()
+        .autoArea(false)
+        .area(width * height / 8)
+        .gravity(0.75)
+        .speed(0.1)
+        .iterations(1500)
+        .nodes(mygraph.nodes)
+        .links(mygraph.links);
 
 	var link = svg.append("g")  // group of lines
 	    .attr("class", "links")
@@ -56,11 +66,11 @@ fdNameSpace.ForceDirected = function(element) {
 	
 	var node = circnodes.append("circle")
 	      .attr("r", function(d) {return d.diam;})
-	      .attr("fill", function(d) { return mycolors(d.group); })
-	      .call(d3.drag()
+	      //.attr("fill", function(d) { return mycolors(d.group); })
+	      ;/*.call(d3.drag()
 	          .on("start", dragstarted)
 	          .on("drag", dragged)
-	          .on("end", dragended));
+	          .on("end", dragended));*/
 	
 	node.append("title")
 	    .text(function(d) { return d.id; });
@@ -70,14 +80,14 @@ fdNameSpace.ForceDirected = function(element) {
 		.attr("y",0)
 		//.attr("class","shadow")
 		.text(function(d) { return d.id; });
-				        
+	/*			        
     simulation
         .nodes(mygraph.nodes)
 	    .on("tick", tick);
 
     simulation.force("link")
          .links(mygraph.links);
-
+    */
 	function tick()
 	{
       link

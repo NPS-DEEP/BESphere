@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,8 +40,8 @@ import com.vaadin.ui.VerticalLayout;
 import edu.nps.deep.beArtifactGui.BeGuiUI;
 import edu.nps.deep.beArtifactGui.d3.BeFriendPanel.FriendOptions;
 import edu.nps.deep.beArtifactGui.d3.ForceDirectedPanel;
+import edu.nps.deep.beArtifactGui.d3.fruchRein.FruchtermanReingoldPanel;
 
-@Theme("beGuiTheme")
 public class RunBefriendPyThreaded extends UI implements Runnable
 {
   public static class FriendEdge
@@ -48,12 +50,22 @@ public class RunBefriendPyThreaded extends UI implements Runnable
     public String target;
     public int weight;
     public FriendEdge(String source,String target,int weight) {this.source=source;this.target=target;this.weight=weight;}
+    @Override
+    public boolean equals(Object obj)
+    {
+      return obj instanceof FriendEdge && source.equals(((FriendEdge)obj).source) && target.equals(((FriendEdge)obj).target);
+    }   
   }
   public static class FriendNode
   {
     public String id;
     public String label;
     public FriendNode(String id, String label) {this.id=id;this.label=label;}
+    @Override
+    public boolean equals(Object obj)
+    {
+      return obj instanceof FriendNode && id.equals(((FriendNode)obj).id) && label.equals(((FriendNode)obj).label);
+    }
   }
 
   public interface ProcessListener {
@@ -63,10 +75,7 @@ public class RunBefriendPyThreaded extends UI implements Runnable
   }
   
   public static String PY3_ENV = "PYTHON3_EXECUTABLE";
-  //public static String EXECUTABLE = "/Library/Frameworks/Python.framework/Versions/3.5/bin/python3";
   public static String SOURCE_NAME = "befriend.py";
-  
- // public static LinkedList<File[]> renderQ = new LinkedList<>();
   
   private File resultsDirectory;
   private File inputData;
@@ -84,11 +93,12 @@ public class RunBefriendPyThreaded extends UI implements Runnable
     makeResultsDir();
     
     inputData = new File(dataFilePath);
-   // String dataDir = inputData.getParent();
-   // String dataFn  = inputData.getName();
     
-    pySrc = copySource();
-    executable = findExecutable();
+    if(pySrc == null)
+      pySrc = copySource();
+    
+    if(executable == null)
+      executable = findExecutable();
     
     thr = new Thread(this,"RunBefriendPyThreaded");
     thr.setPriority(Thread.NORM_PRIORITY);
@@ -102,6 +112,7 @@ public class RunBefriendPyThreaded extends UI implements Runnable
       p.destroy();
     if(thr != null)
       thr.interrupt();
+    killDotTimer();
   }
   
   @Override
@@ -117,19 +128,18 @@ public class RunBefriendPyThreaded extends UI implements Runnable
       arrLis.add(resultsDirectory.getAbsolutePath());
 
       handleOptions(arrLis);
-      arrLis.add(inputData.getParent());
-      //String[] arguments = { executable, pySrc, "-f", inputData.getName()/* dataFn */, "-o",
-     //                        resultsDirectory.getAbsolutePath(), "-w", "32", inputData.getParent()/* dataDir */ };
-      
+      arrLis.add(inputData.getParent());      
 
       String[] arguments = new String[arrLis.size()];
       arguments = arrLis.toArray(arguments);
+      
       ProcessBuilder pb = new ProcessBuilder(arguments);
      // pb.inheritIO();
       pb.redirectErrorStream(true);
       pb.directory(resultsDirectory);
 
-      lis.appendStatus("Job begun."+System.getProperty("line.separator"));  
+      lis.appendStatus("Job begun."); //+System.getProperty("line.separator"));  
+      beginDots();
       
       p = pb.start();
       IOThreadHandler outputHandler = new IOThreadHandler(p.getInputStream());
@@ -137,23 +147,47 @@ public class RunBefriendPyThreaded extends UI implements Runnable
       
       int errCode = p.waitFor();
       if(errCode != 0) {
+        killDotTimer();
         lis.jobDone(errCode);
         return;
       }
 
       processResults(inputData.getAbsolutePath()); // dataFilePath);
-      
+      killDotTimer();
       lis.jobDone(errCode);
     }
     catch(InterruptedException ex) {
+      killDotTimer();
       lis.appendStatus("Job interrupted");
       lis.jobDone(-1);
     }
     catch (Exception ex) {
       ex.printStackTrace();
+      killDotTimer();
       lis.appendStatus("Exception: "+ex.getClass().getSimpleName()+": "+ex.getMessage());
       lis.jobDone(-1);
     }
+  }
+  
+  Timer dotTimer = null;
+  private void killDotTimer()
+  {
+    if(dotTimer != null) {
+      dotTimer.cancel();
+      dotTimer = null;
+    }
+  }
+  private void beginDots()
+  {
+    dotTimer = new Timer();
+    dotTimer.scheduleAtFixedRate(new TimerTask() {
+      @Override
+      public void run() {
+        if(dotTimer==null)
+          cancel();
+        lis.appendStatus(". ");
+      }
+    }, 1000l, 1000l);
   }
   
   private void handleOptions(ArrayList<String>arrLis)
@@ -201,6 +235,7 @@ public class RunBefriendPyThreaded extends UI implements Runnable
       return s;
     return "python3";
   }
+  
   private void processResults(String filename) throws Exception
   {
     String pattern = "glob:**.gexf";
@@ -221,6 +256,8 @@ public class RunBefriendPyThreaded extends UI implements Runnable
   
   private void makeResultsDir() throws IOException
   {
+    if(resultsDirectory != null)
+      return;
     FileAttribute<?> attrs = PosixFilePermissions.asFileAttribute(
         EnumSet.of(
             PosixFilePermission.OWNER_READ,
@@ -250,7 +287,7 @@ public class RunBefriendPyThreaded extends UI implements Runnable
 ********************************************************/
   
   public RunBefriendPyThreaded() {} // for UI
-  private void buildD3Data(File artifactFile, File gefx) throws Exception
+  private static void buildD3Data(File artifactFile, File gefx) throws Exception
   {
      DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
      DocumentBuilder builder = dbfactory.newDocumentBuilder();
@@ -291,19 +328,22 @@ public class RunBefriendPyThreaded extends UI implements Runnable
 //         System.out.println("Edge source: "+ el.getAttribute("source"));
 //         System.out.println("Edge target: "+el.getAttribute("target"));
 //         System.out.println("Edge weight: "+el.getAttribute("weight"));
-         edgeset.add(new FriendEdge(el.getAttribute("source"),el.getAttribute("target"),Integer.parseInt(el.getAttribute("weight"))));
+         edgeset.add(new FriendEdge(el.getAttribute("source"),
+                                    el.getAttribute("target"),
+                                    Integer.parseInt(el.getAttribute("weight"))));
        }
      }
-     mytitle = "BE Friends Graph";
      myinputPath = artifactFile.getAbsolutePath();
      mygraphFile = gefx.getName();
      mynodeset = nodeset;
      myedgeset = edgeset;
   }
   
-  String mytitle,myinputPath,mygraphFile;HashSet<FriendNode> mynodeset;HashSet<FriendEdge> myedgeset;
+  private static String myinputPath,mygraphFile;
+  private static HashSet<FriendNode> mynodeset;
+  private static HashSet<FriendEdge> myedgeset;
   
-  private ForceDirectedPanel getfPan()
+  private static ForceDirectedPanel getfPan()
   {
     ForceDirectedPanel pan = new  ForceDirectedPanel(myinputPath,mygraphFile,mynodeset,myedgeset);
     myinputPath = null;
@@ -313,6 +353,16 @@ public class RunBefriendPyThreaded extends UI implements Runnable
     return pan;
   }
   
+  
+  private static FruchtermanReingoldPanel getFrPan()
+  {
+    FruchtermanReingoldPanel pan = new  FruchtermanReingoldPanel(myinputPath,mygraphFile,mynodeset,myedgeset);
+    myinputPath = null;
+    mynodeset = null;
+    myedgeset=null;
+    mygraphFile=null;
+    return pan;    
+  }
   /* When this class is used as a UI, this is the operative method */
   @Override
   protected void init(VaadinRequest request)
@@ -336,6 +386,36 @@ public class RunBefriendPyThreaded extends UI implements Runnable
       vl.addComponent(new Label("Exception: "+ex.getClass().getSimpleName()+": "+ex.getMessage()));
       setContent(vl);
     }
+  }
+  
+  @Theme("beGuiTheme")
+  public static class FruchReinUI extends UI
+  {
+    @Override
+    protected void init(VaadinRequest request)
+    {
+      @SuppressWarnings("unchecked")
+      LinkedList<File[]> renderQ = (LinkedList<File[]>)getSession().getAttribute(BeGuiUI.RENDERQ_ATTRIBUTE);
+      if(renderQ.isEmpty()) {
+        VerticalLayout vl = new VerticalLayout();
+        vl.addComponent(new Label("No file"));
+        setContent(vl);
+        return;
+      }
+      try {
+        File[] files = renderQ.removeFirst();
+        Page.getCurrent().setTitle("BE Friends / FruchtermanReingold: "+files[1].getName());
+        buildD3Data(files[0],files[1]);
+        setContent(getFrPan());
+      }
+      catch(Exception ex) {
+        VerticalLayout vl = new VerticalLayout();
+        vl.addComponent(new Label("Exception: "+ex.getClass().getSimpleName()+": "+ex.getMessage()));
+        setContent(vl);
+      }
+      
+    }
+    
   }
   
 }

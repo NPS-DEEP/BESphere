@@ -154,7 +154,8 @@ public class ForceDirectedPanel extends _ForceDirectedPanel
     returnObj.put("links", linkArr);
     int idx = 0;
     for(FriendNode fn : nodes) {
-      nodeArr.set(idx++,nodeObject(fn.label,1,5));
+      int group = idx%20;  // determines node color
+      nodeArr.set(idx++,nodeObject(fn.label,idx,7));
     }
     idx = 0;
     for(FriendEdge lnk : edges) {

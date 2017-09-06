@@ -10,12 +10,14 @@ import static edu.nps.deep.beArtifactGui.HandlePreferences.FRIENDS_WINDOW_SIZE_D
 import static edu.nps.deep.beArtifactGui.HandlePreferences.FRIENDS_WINDOW_SIZE_KEY;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import com.vaadin.data.HasValue.ValueChangeEvent;
+import com.vaadin.event.selection.SingleSelectionEvent;
+import com.vaadin.event.selection.SingleSelectionListener;
 import com.vaadin.server.BrowserWindowOpener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Notification;
@@ -44,6 +46,8 @@ public class BeFriendPanel extends _BeFriendPanel implements ProcessListener
   }
   private String sourcefile;
   private UI myUI;
+  private boolean inittingCB = false;
+  
   public BeFriendPanel(String sourcefile)
   {
     myUI = UI.getCurrent();
@@ -55,15 +59,14 @@ public class BeFriendPanel extends _BeFriendPanel implements ProcessListener
     
     beginButt.addClickListener(e->doBegin());    
     cancelButt.addClickListener(e->doCancel());
-    resultsCB.addSelectionListener(e-> {
-      doGraphButt.setEnabled(true);
-      @SuppressWarnings("unchecked")
-      LinkedList<File[]> renderQ = (LinkedList<File[]>) myUI.getSession().getAttribute(BeGuiUI.RENDERQ_ATTRIBUTE);
-      renderQ.add(new File[] {new File(sourcefile),getGexfFile()});
-    });
-    BrowserWindowOpener opener = new BrowserWindowOpener(RunBefriendPyThreaded.class);
-    opener.extend(doGraphButt);
     
+    resultsCB.addSelectionListener(resultsCBLis);
+    
+    BrowserWindowOpener opener = new BrowserWindowOpener(RunBefriendPyThreaded.FruchReinUI.class); //RunBefriendPyThreaded.class);
+    opener.extend(doGraphButt);
+
+    doGraphButt.addClickListener(e->resultsCBLis.selectionChange(null));  // this just puts the selection in place if there is another render of the same file
+
     handlePrefs(sourcefile);
     
     winSizeTF.addValueChangeListener(e->saveIntPref(e));
@@ -81,6 +84,18 @@ public class BeFriendPanel extends _BeFriendPanel implements ProcessListener
       initting=false;
     });
   }
+  private SingleSelectionListener<String> resultsCBLis = new SingleSelectionListener<String>() {
+    @Override
+    public void selectionChange(SingleSelectionEvent<String> event)
+    {
+      if(inittingCB) return;
+      @SuppressWarnings("unchecked")
+      LinkedList<File[]> renderQ = (LinkedList<File[]>) myUI.getSession().getAttribute(BeGuiUI.RENDERQ_ATTRIBUTE);  //not using as a queue
+      renderQ.clear();
+      renderQ.add(new File[] {new File(sourcefile),getGexfFile()});      
+    }    
+  };
+  
   private boolean initting = false;
   private void handlePrefs(String sourcefile)
   {
@@ -135,9 +150,12 @@ public class BeFriendPanel extends _BeFriendPanel implements ProcessListener
   private RunBefriendPyThreaded runner;
   private void doBegin()
   {
-    //resultsCB.setItems(new ArrayList<String>()); // empty
+    beginButt.setEnabled(false);
+    cancelButt.setEnabled(true);
     try {
-      runner = new RunBefriendPyThreaded().go(sourcefile, this, getOptions());
+      if(runner == null)
+        runner = new RunBefriendPyThreaded();
+      runner.go(sourcefile, this, getOptions());
     }
     catch(Exception ex) {
       Notification.show("Error from python runner: "+ex.getClass().getSimpleName()+" "+ex.getMessage());
@@ -147,52 +165,74 @@ public class BeFriendPanel extends _BeFriendPanel implements ProcessListener
 
   private void doCancel()
   {
+    beginButt.setEnabled(true);
+    cancelButt.setEnabled(false);
     runner.cancel();
     cancelButt.setEnabled(false);
   }
   
   private void appendToTA(String s, Boolean cancelButtState)
   {
-    myUI.access(()-> {
-      ta.setValue(ta.getValue()+s);
-      ta.setCursorPosition(ta.getValue().length());
-      if(cancelButtState != null)
-        cancelButt.setEnabled(cancelButtState);
-    });
+    ta.setValue(ta.getValue()+s);
+    ta.setCursorPosition(ta.getValue().length());
   }
+  
   @Override
   public void appendStatus(String s)
   {
-    appendToTA(s,null);
+    myUI.access(()->{  // not in gui thread
+      appendToTA(s,null);
+    });
   }
 
   @Override
   public void jobDone(int errCode)
   {
-    appendToTA("Job complete."+System.getProperty("line.separator"),false);
+    myUI.access(()->{  // not in gui thread
+      appendToTA("Job complete."+System.getProperty("line.separator"),false);
+      beginButt.setEnabled(true);
+      cancelButt.setEnabled(false);
+    });
   }
 
-  private      List<File>   files;
+  private TreeMap<String,File> files = new TreeMap<>();
   
+  // When a job is complete, the full file list comes back, including previously generated ones
   @Override
   public void graphList(List<File> list)
   {
-    files = list;
-    ArrayList<String> fileNames = new ArrayList<>();
-    for(File f : list)
-      fileNames.add(f.getName());
-    resultsCB.setItems(fileNames);
-    resultsCB.setSelectedItem(fileNames.get(0));
+    if(list.isEmpty()) {
+      doGraphButt.setEnabled(false);
+      return;
+    }
+    myUI.access(()-> {  // not in ui thread
+      files.clear();
+    
+      String first = null;
+      for(File f : list) {
+        String name = f.getName();
+        if(first == null)
+          first = name;
+        files.put(name, f);
+      }
+      //inittingCB = true;
+      resultsCB.setItems(files.keySet());
+      if(first != null)
+        resultsCB.setSelectedItem(first);
+      //inittingCB = false;
+      
+      doGraphButt.setEnabled(true);
+    });
   }
- 
+  
   private File getGexfFile()
   {
     Optional<String> opt = resultsCB.getSelectedItem();
     if(opt.isPresent()) {
       String nm = opt.get();
-      for(File f : files)
-        if(f.getName().equals(nm))
-          return f;
+      File f = files.get(nm);
+      if(f != null)
+        return f;
     }
     throw new RuntimeException("Program error in BeFriendPanel.getGexfFile()");
   }

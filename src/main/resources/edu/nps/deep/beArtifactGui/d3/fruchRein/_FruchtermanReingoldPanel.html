@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="design-properties" content="{&quot;RULERS_VISIBLE&quot;:true,&quot;GUIDELINES_VISIBLE&quot;:false,&quot;SNAP_TO_OBJECTS&quot;:true,&quot;SNAP_TO_GRID&quot;:true,&quot;SNAPPING_DISTANCE&quot;:10,&quot;GENERATE_GETTERS&quot;:false,&quot;JAVA_SOURCES_ROOT&quot;:&quot;src/main/java&quot;,&quot;THEME&quot;:&quot;beGuiTheme&quot;}">
+  <meta name="vaadin-version" content="8.0.5">
+ </head>
+ <body>
+  <vaadin-vertical-layout size-full>
+   <vaadin-horizontal-layout :center>
+    <vaadin-vertical-layout caption="BE Friend" style-name="lightgrey-border-2 side-padding-5 largecaption" margin="false">
+     <vaadin-label caption="Disk image file" plain-text _id="imageFileLab">
+       blah 
+     </vaadin-label>
+     <vaadin-label caption="BE Friend graph file" plain-text _id="graphFileLab">
+       blah 
+     </vaadin-label>
+     <vaadin-horizontal-layout>
+      <vaadin-label caption="Nodes" width-full plain-text _id="nodeCountLab">
+        0 
+      </vaadin-label>
+      <vaadin-label caption="Edges" width-full plain-text _id="edgeCountLab">
+        0 
+      </vaadin-label>
+     </vaadin-horizontal-layout>
+    </vaadin-vertical-layout>
+    <vaadin-vertical-layout caption="Fruchterman-Reingold Layout" style-name="lightgrey-border-2 largecaption" spacing="false" width="280px" margin="false">
+     <vaadin-grid-layout style-name="side-padding-5" width-full>
+      <row>
+       <column>
+        <vaadin-vertical-layout spacing="false" size-auto margin="false">
+         <vaadin-label style-name="small bold" width="0px" height="0px" plain-text>
+           autoarea 
+         </vaadin-label>
+         <vaadin-check-box height="19px" _id="autoareaCB" :middle :center :expand></vaadin-check-box>
+        </vaadin-vertical-layout>
+       </column>
+       <column>
+        <vaadin-text-field caption="area" style-name="small" width="130px" _id="areaTF"></vaadin-text-field>
+       </column>
+      </row>
+      <row>
+       <column>
+        <vaadin-text-field caption="speed" style-name="small" width="130px" _id="speedTF"></vaadin-text-field>
+       </column>
+       <column>
+        <vaadin-text-field caption="gravity" style-name="small" width="130px" _id="gravityTF"></vaadin-text-field>
+       </column>
+      </row>
+      <row></row>
+     </vaadin-grid-layout>
+     <vaadin-button style-name="link small" plain-text _id="defaultsButt" :center>
+       Restore defaults 
+     </vaadin-button>
+     <vaadin-button enabled="false" style-name="tiny quiet" plain-text _id="layoutButt" :center>
+       re-layout 
+     </vaadin-button>
+    </vaadin-vertical-layout>
+    <vaadin-vertical-layout caption="Filter" style-name="lightgrey-border-2 padding-5 largecaption" spacing="false" size-auto margin="false">
+     <vaadin-grid-layout spacing size-full :expand>
+      <row>
+       <column>
+        <vaadin-label plain-text :middle>
+          K-core 
+        </vaadin-label>
+       </column>
+       <column>
+        <vaadin-combo-box page-length="15" style-name="small" width="75px" data-item-type="java.lang.String" _id="kCoreCombo">
+         <option item="Option1">1</option>
+        </vaadin-combo-box>
+       </column>
+       <column>
+        <vaadin-label style-name="tiny" plain-text :middle>
+          (0 = no filter) 
+        </vaadin-label>
+       </column>
+      </row>
+     </vaadin-grid-layout>
+    </vaadin-vertical-layout>
+   </vaadin-horizontal-layout>
+   <vaadin-vertical-layout style-name="lightgrey-border-2" size-full margin="false" _id="graphVL" :center :expand></vaadin-vertical-layout>
+  </vaadin-vertical-layout>
+ </body>
+</html>

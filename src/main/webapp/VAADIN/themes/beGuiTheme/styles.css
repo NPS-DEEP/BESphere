@@ -1081,7 +1081,7 @@
  */
 
 .v-vaadin-version:after {
-	content: "8.1.1";
+	content: "8.1.3";
 }
 
 .v-widget {
@@ -3070,6 +3070,10 @@ div.v-layout.v-horizontal.v-widget {
 .beGuiTheme .v-filterselect .v-icon {
 	position: absolute;
 	pointer-events: none;
+}
+
+.beGuiTheme .v-filterselect .v-icon.FontAwesome {
+	margin-left: 0px;
 }
 
 .beGuiTheme .v-filterselect-error .v-filterselect-input {
@@ -14767,6 +14771,10 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid lightgrey;
 }
 
+.beGuiTheme .darkgrey-border-2 {
+	border: 2px solid darkgrey;
+}
+
 .beGuiTheme .black-border-1 {
 	border: 1px solid black;
 }
@@ -14774,4 +14782,17 @@ div.v-layout.v-horizontal.v-widget {
 .beGuiTheme .side-padding-5 {
 	padding-left: 5px;
 	padding-right: 5px;
+}
+
+.beGuiTheme .padding-5 {
+	padding: 5px;
+}
+
+.beGuiTheme .nodegroups {
+	font-size: 12px;
+	color: darkgray;
+}
+
+.beGuiTheme .v-caption-largecaption {
+	font-size: large;
 }
