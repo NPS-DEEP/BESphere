@@ -10,7 +10,7 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 import elemental.json.JsonObject;
 
 @StyleSheet({"chart.css"})
-@JavaScript({ "https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js","d3.v3.min.js","d3.layout.fruchtermanReingold.js","data.js","chart.js", "fruchtermanreingold-connector.js"})
+@JavaScript({ "https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js","d3.v3.min.js","d3-tip.js","d3.layout.fruchtermanReingold.js","chart.js", "fruchtermanreingold-connector.js"})
 public class FruchtermanReingold extends AbstractJavaScriptComponent
 {
   public FruchtermanReingold()

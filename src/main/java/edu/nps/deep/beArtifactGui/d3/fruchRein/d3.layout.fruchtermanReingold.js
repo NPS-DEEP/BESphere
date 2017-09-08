@@ -209,5 +209,5 @@ d3.layout.fruchtermanReingold = function() {
         return force.iterations(0);
     };
 
-    return d3.rebind(force, event, "on");
+    return d3.rebind(force, event, "on");   
 };
