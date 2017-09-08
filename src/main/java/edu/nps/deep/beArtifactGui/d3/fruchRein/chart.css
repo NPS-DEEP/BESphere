@@ -198,7 +198,7 @@ svg#path .link {
     /*font-weight: bold; */
     padding: 12px;
     background: rgba(243, 237, 237, 0.8);
-    border: 1px solid light-gray;
+    border: 1px solid #b3b3b3;
     color: dark-gray; /*#fff;*/
     border-radius: 2px;
     pointer-events: none;
