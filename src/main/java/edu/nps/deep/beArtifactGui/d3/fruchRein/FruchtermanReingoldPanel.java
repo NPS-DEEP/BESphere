@@ -80,7 +80,7 @@ public class FruchtermanReingoldPanel extends _FruchtermanReingoldPanel
     returnObj.put("links", linkArr);
 
     nodeArr.set(0, nodeObject(email,2,10));
-    System.out.println("node: "+email+" 2");
+    //System.out.println("node: "+email+" 2");
     Set<Entry<String,Long>> vals = emailCloseness.entrySet();
     int idx = 1;
     for(Entry<String,Long> entry : vals) {
@@ -134,7 +134,16 @@ public class FruchtermanReingoldPanel extends _FruchtermanReingoldPanel
     nodeCountLab.setValue(""+nodes.size());
     edgeCountLab.setValue(""+edges.size());
     setupParamWidgets();
-
+    upButt.addClickListener(e->{
+      Integer val = (Integer)checkValid(areaTF.getValue().trim(),false);
+      val = val*5;
+      areaTF.setValue(val.toString());
+    });
+    downButt.addClickListener(e->{
+      Integer val = (Integer)checkValid(areaTF.getValue().trim(),false);
+      val = val/5;
+      areaTF.setValue(val.toString());
+    });
     fr = new FruchtermanReingold();
     JsonObject jo = buildBeFriendJson(nodes,edges);
     loadParams();
@@ -211,6 +220,8 @@ public class FruchtermanReingoldPanel extends _FruchtermanReingoldPanel
       params.autoarea = autoareaCB.getValue();
       layoutButt.setEnabled(true);
       areaTF.setEnabled(!params.autoarea);
+      upButt.setEnabled(!params.autoarea);
+      downButt.setEnabled(!params.autoarea);
       HandlePreferences.putBoolean(FRUCHT_REIN_AUTOAREA_KEY+graphFileLab.getValue(),autoareaCB.getValue());
     });
     

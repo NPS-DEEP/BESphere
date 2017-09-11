@@ -50,10 +50,10 @@ fdNameSpace.FruchtermanReingold = function(element) {
 
   /****** End Vaadin component plumbing ******/
   
-  var outer_width  = $('#container').width();     //2200
-  var outer_height = $('#container').height();    //2200
-  var chart_width  = $('svg#chart').width();      //1386
-  var chart_height = $('svg#chart').height();     //1386
+  var outer_width  = $('#container').width();     //browser width, e.g. 1635
+  var outer_height = $('#container').height();    //browser height, e.g. 767
+  var chart_width  = $('svg#chart').width();      //2200
+  var chart_height = $('svg#chart').height();     //2200
 
   //***************************
   // Graph parameters, set to defaults
@@ -72,6 +72,15 @@ fdNameSpace.FruchtermanReingold = function(element) {
   .html(function(d){return buildToolTip(d);})
   .direction('nw')
   .offset([0, 3]);
+  
+  var tipL = d3.tip()
+  .attr('class', 'd3-tip')
+  .html(function(d){return buildToolTipL(d);})
+  .direction('nw')
+  .offset(function() {
+     return [(this.getBBox().height / 2)+50, 300]
+   });
+  //.offset([0, 300]);
   
   function initNodes(locdata, type) {
     for (var key in locdata) {
@@ -211,9 +220,9 @@ fdNameSpace.FruchtermanReingold = function(element) {
 		return"rgb("+darkR+","+darkG+","+darkB+");";
 	 
 	 var wdiff = w-weightMin;
-	 var rr= lightR - (spanR*wdiff/weightSpan);
-     var gg= (lightG-(spanG * wdiff / weightSpan));
-     var bb= (lightB-(spanB * wdiff / weightSpan));
+	 var rr = Math.round(lightR - (spanR * wdiff / weightSpan));
+     var gg = Math.round(lightG - (spanG * wdiff / weightSpan));
+     var bb = Math.round(lightB - (spanB * wdiff / weightSpan));
      
      return "rgb("+rr+","+gg+","+bb+");";
   }
@@ -231,6 +240,21 @@ fdNameSpace.FruchtermanReingold = function(element) {
         str += "</span>";
     }
     str += "</pre>"
+    	return str;
+  }
+  
+  var buildToolTipL = function(d)
+  {
+    var str = "<pre class='fr-tt'>";
+        str += "Link";
+	    str += "<span style='font-size:smaller'>";
+    	    str += '\n  source: ';
+        str += d.source.name;
+        str += "\n  target: ";
+        str += d.target.name;
+        str += "\n  weight: ";
+        str += d.weight;
+        str += "</span></pre>"
     	return str;
   }
   
@@ -356,7 +380,7 @@ fdNameSpace.FruchtermanReingold = function(element) {
    */ 
   
     svg.call(tip);
-
+    svg.call(tipL);
     
     var force = d3.layout.fruchtermanReingold()
         .autoArea(autoAreaP) //false)
@@ -374,7 +398,9 @@ fdNameSpace.FruchtermanReingold = function(element) {
            return "stroke-width:"+calcLinkWidth(d.weight)+
                   ";stroke:"+calcLinkColor(d.weight);
         })
-        .attr("class", "link");
+        .attr("class", "link")
+        .on('mouseover', tipL.show)
+        .on('mouseout', tipL.hide);
 
     var node = svg.selectAll(".node")
         .data(graph.nodes)

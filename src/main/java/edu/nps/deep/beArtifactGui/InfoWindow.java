@@ -35,8 +35,8 @@ public class InfoWindow extends _InfoWindow
       TreeMap<Long, String> offset2EmailMap, TreeMap<Integer,String>frequencyMap)
   {
     super();
-    System.out.println("InfoWindow: filename: "+filename+" email2OffsetMap.size: "+email2OffsetMap.size()+" offset2EmailMap.size: "+offset2EmailMap.size()
-                       + " frequencyMap.size: "+frequencyMap.size());
+    //System.out.println("InfoWindow: filename: "+filename+" email2OffsetMap.size: "+email2OffsetMap.size()+" offset2EmailMap.size: "+offset2EmailMap.size()
+    //                   + " frequencyMap.size: "+frequencyMap.size());
     this.email2OffsetMap = email2OffsetMap;
     this.offset2EmailMap = offset2EmailMap;
     //this.frequencyMap = frequencyMap;
@@ -63,16 +63,16 @@ public class InfoWindow extends _InfoWindow
   private void handleEmailGraph(Set<Entry<Integer, String>> sset)
   {
     String email = sset.iterator().next().getValue();
-    System.out.println(email);
+    //System.out.println(email);
     Long[] offsets = email2OffsetMap.get(email);
-    System.out.println(""+offsets.length+" locations");
+    //System.out.println(""+offsets.length+" locations");
     
     HashMap<String,Long> emailCloseness = new HashMap<>();
     
     for(long off : offsets) {
       findNeighbor(email,off,emailCloseness);
     }
-    System.out.println("Neighbor count: "+emailCloseness.size());
+    //System.out.println("Neighbor count: "+emailCloseness.size());
     
     ForceDirectedPanel.show("Email Proximity Graph", nameTF.getValue(), email, emailCloseness);
   }

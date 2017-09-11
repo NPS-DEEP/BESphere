@@ -76,7 +76,7 @@ public class ForceDirectedPanel extends _ForceDirectedPanel
     returnObj.put("links", linkArr);
 
     nodeArr.set(0, nodeObject(email,2,10));
-    System.out.println("node: "+email+" 2");
+   // System.out.println("node: "+email+" 2");
     Set<Entry<String,Long>> vals = emailCloseness.entrySet();
     int idx = 1;
     for(Entry<String,Long> entry : vals) {
@@ -154,7 +154,7 @@ public class ForceDirectedPanel extends _ForceDirectedPanel
     returnObj.put("links", linkArr);
     int idx = 0;
     for(FriendNode fn : nodes) {
-      int group = idx%20;  // determines node color
+      //int group = idx%20;  // determines node color
       nodeArr.set(idx++,nodeObject(fn.label,idx,7));
     }
     idx = 0;

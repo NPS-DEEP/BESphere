@@ -5,6 +5,7 @@ import com.vaadin.annotations.DesignRoot;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -28,7 +29,10 @@ public class _FruchtermanReingoldPanel extends VerticalLayout
   protected Label nodeCountLab;
   protected Label edgeCountLab;
   protected CheckBox autoareaCB;
+  protected HorizontalLayout zoomHL;
   protected TextField areaTF;
+  protected Button upButt;
+  protected Button downButt;
   protected TextField speedTF;
   protected TextField gravityTF;
   protected Button defaultsButt;

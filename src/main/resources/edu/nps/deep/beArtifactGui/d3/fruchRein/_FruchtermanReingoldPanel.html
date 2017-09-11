@@ -24,7 +24,7 @@
       </vaadin-label>
      </vaadin-horizontal-layout>
     </vaadin-vertical-layout>
-    <vaadin-vertical-layout caption="Fruchterman-Reingold Layout" style-name="lightgrey-border-2 largecaption" spacing="false" width="280px" margin="false">
+    <vaadin-vertical-layout caption="Fruchterman-Reingold Layout" style-name="lightgrey-border-2 largecaption" spacing="false" width="310px" margin="false">
      <vaadin-grid-layout style-name="side-padding-5" width-full>
       <row>
        <column>
@@ -36,7 +36,13 @@
         </vaadin-vertical-layout>
        </column>
        <column>
-        <vaadin-text-field caption="area (zoom)" style-name="small" width="130px" _id="areaTF"></vaadin-text-field>
+        <vaadin-horizontal-layout spacing="false" _id="zoomHL">
+         <vaadin-text-field caption="area (zoom)" style-name="small" width="130px" _id="areaTF"></vaadin-text-field>
+         <vaadin-vertical-layout spacing="false" size-auto margin="false" :bottom>
+          <vaadin-button icon="fonticon://Vaadin-Icons/e6f6" style-name="small borderless-colored" height="18px" plain-text _id="upButt"></vaadin-button>
+          <vaadin-button icon="fonticon://Vaadin-Icons/e6f0" style-name="small borderless-colored" height="18px" plain-text _id="downButt"></vaadin-button>
+         </vaadin-vertical-layout>
+        </vaadin-horizontal-layout>
        </column>
       </row>
       <row>
