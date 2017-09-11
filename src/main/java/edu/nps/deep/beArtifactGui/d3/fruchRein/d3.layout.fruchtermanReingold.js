@@ -33,7 +33,7 @@ d3.layout.fruchtermanReingold = function() {
             edgesCount = links.length;
 
         area = autoArea ? (nodesCount * nodesCount) : area;
-        var maxDisplace = Math.sqrt(area) / 1, //0,
+        var maxDisplace = Math.sqrt(area) / 10,
             k = Math.sqrt(area / (1 + nodesCount));
 
         for (i = 0; i < nodesCount; i++) {
