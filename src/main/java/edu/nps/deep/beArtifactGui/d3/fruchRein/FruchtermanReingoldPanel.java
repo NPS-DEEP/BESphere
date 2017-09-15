@@ -1,6 +1,7 @@
 package edu.nps.deep.beArtifactGui.d3.fruchRein;
 
 import static edu.nps.deep.beArtifactGui.HandlePreferences.*;
+import static edu.nps.deep.beArtifactGui.d3.fruchRein.FruchtermanReingoldState.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -197,6 +198,7 @@ public class FruchtermanReingoldPanel extends _FruchtermanReingoldPanel
     public Float speed;
     public Float gravity;
     public Integer kcore;
+    public Integer iterations;
   }
   private ParamState params = new ParamState();
   
@@ -252,12 +254,21 @@ public class FruchtermanReingoldPanel extends _FruchtermanReingoldPanel
       }
     });
     
+    iterationsTF.addValueChangeListener(e-> {
+      Integer val = (Integer)checkValid(iterationsTF.getValue().trim(),false);
+      if(val != null) {
+        params.iterations = val;
+        layoutButt.setEnabled(true);
+        HandlePreferences.putInt(FRUCHT_REIN_ITERATIONS_KEY+graphFileLab.getValue(), val);
+      }
+    });
     defaultsButt.addClickListener(e-> {
-      autoareaCB.setValue(FruchtermanReingoldState.AUTOAREA_DEFAULT); HandlePreferences.removeKey(FRUCHT_REIN_AUTOAREA_KEY+graphFileLab.getValue());
-      areaTF.setValue(""+FruchtermanReingoldState.AREA_DEFAULT);      HandlePreferences.removeKey(FRUCHT_REIN_AREA_KEY+graphFileLab.getValue());
-      speedTF.setValue(""+FruchtermanReingoldState.SPEED_DEFAULT);    HandlePreferences.removeKey(FRUCHT_REIN_SPEED_KEY+graphFileLab.getValue());
-      gravityTF.setValue(""+FruchtermanReingoldState.GRAVITY_DEFAULT);HandlePreferences.removeKey(FRUCHT_REIN_GRAVITY_KEY+graphFileLab.getValue());
-      kCoreCombo.setValue(""+FruchtermanReingoldState.KCORE_DEFAULT); HandlePreferences.removeKey(FRUCHT_REIN_KCORE_KEY+graphFileLab.getValue());
+      autoareaCB.setValue(AUTOAREA_DEFAULT); HandlePreferences.removeKey(FRUCHT_REIN_AUTOAREA_KEY+graphFileLab.getValue());
+      areaTF.setValue(""+AREA_DEFAULT);      HandlePreferences.removeKey(FRUCHT_REIN_AREA_KEY+graphFileLab.getValue());
+      speedTF.setValue(""+SPEED_DEFAULT);    HandlePreferences.removeKey(FRUCHT_REIN_SPEED_KEY+graphFileLab.getValue());
+      gravityTF.setValue(""+GRAVITY_DEFAULT);HandlePreferences.removeKey(FRUCHT_REIN_GRAVITY_KEY+graphFileLab.getValue());
+      kCoreCombo.setValue(""+KCORE_DEFAULT); HandlePreferences.removeKey(FRUCHT_REIN_KCORE_KEY+graphFileLab.getValue());
+      iterationsTF.setValue(""+ITERATIONS_DEFAULT); HandlePreferences.removeKey(FRUCHT_REIN_ITERATIONS_KEY+graphFileLab.getValue());
       
       layoutButt.setEnabled(true);
     });
@@ -273,15 +284,16 @@ public class FruchtermanReingoldPanel extends _FruchtermanReingoldPanel
     });
 
 
-    boolean aa = HandlePreferences.getBoolean(FRUCHT_REIN_AUTOAREA_KEY+graphFileLab.getValue(), FruchtermanReingoldState.AUTOAREA_DEFAULT);
+    boolean aa = HandlePreferences.getBoolean(FRUCHT_REIN_AUTOAREA_KEY+graphFileLab.getValue(), AUTOAREA_DEFAULT);
     autoareaCB.setValue(aa);
     params.autoarea = aa; // doesn't hit listener like the others
      
-    areaTF.setValue(""+HandlePreferences.getInt(FRUCHT_REIN_AREA_KEY+graphFileLab.getValue(),FruchtermanReingoldState.AREA_DEFAULT));
-    speedTF.setValue(""+HandlePreferences.getFloat(FRUCHT_REIN_SPEED_KEY+graphFileLab.getValue(),FruchtermanReingoldState.SPEED_DEFAULT));
-    gravityTF.setValue(""+HandlePreferences.getFloat(FRUCHT_REIN_GRAVITY_KEY+graphFileLab.getValue(),FruchtermanReingoldState.GRAVITY_DEFAULT));
-    kCoreCombo.setValue(""+HandlePreferences.getInt(FRUCHT_REIN_KCORE_KEY+graphFileLab.getValue(),FruchtermanReingoldState.KCORE_DEFAULT));
-    
+    areaTF.setValue(""+HandlePreferences.getInt(FRUCHT_REIN_AREA_KEY+graphFileLab.getValue(),AREA_DEFAULT));
+    speedTF.setValue(""+HandlePreferences.getFloat(FRUCHT_REIN_SPEED_KEY+graphFileLab.getValue(),SPEED_DEFAULT));
+    gravityTF.setValue(""+HandlePreferences.getFloat(FRUCHT_REIN_GRAVITY_KEY+graphFileLab.getValue(),GRAVITY_DEFAULT));
+    kCoreCombo.setValue(""+HandlePreferences.getInt(FRUCHT_REIN_KCORE_KEY+graphFileLab.getValue(),KCORE_DEFAULT));
+    iterationsTF.setValue(""+HandlePreferences.getInt(FRUCHT_REIN_ITERATIONS_KEY+graphFileLab.getValue(),ITERATIONS_DEFAULT));
+
     layoutButt.setEnabled(false);
   }
   
@@ -300,6 +312,9 @@ public class FruchtermanReingoldPanel extends _FruchtermanReingoldPanel
     fval = (Float) checkValid(gravityTF.getValue().trim(), true);
     if (fval != null)
       params.gravity = fval;
+    val = (Integer) checkValid(iterationsTF.getValue().trim(), false);
+    if(val != null)
+      params.iterations = val;
   }
       
   private void loadParamsJsonObject(JsonObject holder)
@@ -309,6 +324,7 @@ public class FruchtermanReingoldPanel extends _FruchtermanReingoldPanel
     if(params.speed != null)   FruchtermanReingoldState.addSpeed(params.speed,holder);
     if(params.gravity != null) FruchtermanReingoldState.addGravity(params.gravity,holder);
     if(params.kcore != null)   FruchtermanReingoldState.addKcore(params.kcore,holder);
+    if(params.iterations != null) FruchtermanReingoldState.addIterations(params.iterations,holder);
   }
   
   private Object checkValid(String s, boolean isFloat)

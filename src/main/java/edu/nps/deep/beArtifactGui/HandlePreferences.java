@@ -20,6 +20,7 @@ public class HandlePreferences
   public static final String FRUCHT_REIN_SPEED_KEY = "fr_speed_";
   public static final String FRUCHT_REIN_GRAVITY_KEY = "fr_gravity_";
   public static final String FRUCHT_REIN_KCORE_KEY = "fr_kcore_";
+  public static final String FRUCHT_REIN_ITERATIONS_KEY = "fr_iterations_";
 
   public static final int     FRIENDS_WINDOW_SIZE_DEFAULT = 128;
   public static final boolean FRIENDS_FIXED_WINDOW_DEFAULT = false;

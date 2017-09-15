@@ -33,6 +33,7 @@ public class FruchtermanReingoldState extends JavaScriptComponentState
   public static String SPEED_PARAM  = "speed";
   public static String GRAVITY_PARAM  = "gravity";
   public static String KCORE_PARAM = "kcore";
+  public static String ITERATIONS_PARAM = "iterations";
 
   public static String COMMAND_PARAM = "command";
   public static String LAYOUT_CMD = "layout";
@@ -45,6 +46,7 @@ public class FruchtermanReingoldState extends JavaScriptComponentState
   public static Boolean AUTOAREA_DEFAULT = false;
   public static Integer AREA_DEFAULT = 2420000;
   public static Integer KCORE_DEFAULT = 0;
+  public static Integer ITERATIONS_DEFAULT = 1500;
   
   public JsonObject value;
   
@@ -82,6 +84,12 @@ public class FruchtermanReingoldState extends JavaScriptComponentState
   {
     holder.put(KCORE_PARAM,Json.create(kcore));
     return holder;    
+  }
+  
+  public static JsonObject addIterations(Integer iters, JsonObject holder)
+  {
+    holder.put(ITERATIONS_PARAM, Json.create(iters));
+    return holder;
   }
 
   public static JsonObject addLayout(JsonObject holder)

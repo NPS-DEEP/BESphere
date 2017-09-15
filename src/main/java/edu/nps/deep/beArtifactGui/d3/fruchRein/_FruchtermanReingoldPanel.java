@@ -35,6 +35,7 @@ public class _FruchtermanReingoldPanel extends VerticalLayout
   protected Button downButt;
   protected TextField speedTF;
   protected TextField gravityTF;
+  protected TextField iterationsTF;
   protected Button defaultsButt;
   protected Button layoutButt;
   protected ComboBox<java.lang.String> kCoreCombo;

@@ -32,8 +32,8 @@ fdNameSpace.FruchtermanReingold = function(element) {
         dataobj = componentValue["data"];
 
 	    var len = Object.keys(dataobj.nodes).length;
-	    if(len > 500) {
-		  alert("Can't graph greater than 500 nodes.  This graph has "+len);
+	    if(len > 10000) { //500) {
+		  alert("Can't graph greater than 10000 nodes.  This graph has "+len);
 		  return;
 	    }
 	    oldDocReady(this);
@@ -63,6 +63,7 @@ fdNameSpace.FruchtermanReingold = function(element) {
   var speedP = 0.1;
   var gravityP = 0.75;
   var kcoreP = 0;
+  var iterationsP = 1500;
   var data = {};
   //***************************
   
@@ -273,6 +274,7 @@ fdNameSpace.FruchtermanReingold = function(element) {
     	if(stateValue["area"] != null)       areaP = stateValue["area"];
     	if(stateValue["gravity"] != null)    gravityP = stateValue["gravity"];
     	if(stateValue["kcore"] != null)      kcoreP = stateValue["kcore"];
+    	if(stateValue["iterations"] != null) iterationsP = stateValue["iterations"];
     	
  /*   	
     console.log("log state speed: "+stateValue["speed"]);
@@ -283,6 +285,39 @@ fdNameSpace.FruchtermanReingold = function(element) {
     console.log("log default area: "+chart_width * chart_height / 2);
 */      
 	var value = stateValue["data"];
+	
+	function legalClass(str) {
+	  var regex = new RegExp('[@\.]','g');
+	  str = str.replace(regex,'_');
+	  return str;
+	}
+	
+	var drag = d3.behavior.drag()
+	   .origin(function(d) { return d; })
+	   .on("drag", dragmove);
+	
+	function dragmove(d) {
+		var ev = d3.event;
+		  d3.select(this)
+		      .attr("cx", d.x = ev.x) 
+		      .attr("cy", d.y = ev.y);
+		  var escId = legalClass(d.id);
+		  d3.selectAll(".source"+escId)   // move source links
+		       .attr("x1", ev.x)
+		       .attr("y1", ev.y);
+		  
+		  d3.selectAll(".target"+escId)   // move target links
+	       .attr("x2", ev.x)
+	       .attr("y2", ev.y);
+		  
+		  d3.selectAll("#text"+escId)    // move labels by deltas
+		   .attr("x",function() {
+		    	  return parseInt(d3.select(this).attr('x')) + ev.dx;
+		    })
+	       .attr("y",function() {
+		    	  return parseInt(d3.select(this).attr('y')) + ev.dy;
+	       });
+		}
 	
 	initNodes(value.nodes,"befriend");
 	
@@ -387,7 +422,7 @@ fdNameSpace.FruchtermanReingold = function(element) {
         .area(areaP) //chart_width * chart_height / 2)// 3) //4)//8)
         .gravity(gravityP) //1.5)//0.75)
         .speed(speedP) //0.1)
-        .iterations(1500)
+        .iterations(iterationsP) //1500)
         .nodes(graph.nodes)
         .links(graph.links);
 
@@ -398,7 +433,11 @@ fdNameSpace.FruchtermanReingold = function(element) {
            return "stroke-width:"+calcLinkWidth(d.weight)+
                   ";stroke:"+calcLinkColor(d.weight);
         })
-        .attr("class", "link")
+        .attr("class", function(d) {
+        	  var escSid = "source"+legalClass(d.source.id);
+        	  var escTid = "target"+legalClass(d.target.id);
+        	  return "link "+escSid+" "+escTid;
+        })
         .on('mouseover', tipL.show)
         .on('mouseout', tipL.hide);
 
@@ -415,13 +454,17 @@ fdNameSpace.FruchtermanReingold = function(element) {
             return d.id;
         })
         .on('mouseover', tip.show)
-        .on('mouseout', tip.hide);
+        .on('mouseout', tip.hide)
+        .call(drag);
         
     var text = svg.selectAll(".text")
         .data(graph.nodes)
         .enter().append("text")
         .attr("class", function(d) {
             return "text " + d.type;
+        })
+        .attr("id", function (d) {
+        	  return "text"+legalClass(d.id);
         })
         .text(function(d) {
             return d.name;
